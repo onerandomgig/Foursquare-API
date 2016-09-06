@@ -2,6 +2,10 @@ package in.continuousloop.winnie.config;
 
 import android.content.Context;
 
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
+
 /**
  * This class initializes libraries that are used throughout the application.
  */
@@ -23,5 +27,6 @@ public class Configuration {
         isInitialized = true;
 
         // Initialize app specific libraries like analytics, AB tests etc, lifecycle callbacks etc
+        Fabric.with(aContext, new Crashlytics());
     }
 }
