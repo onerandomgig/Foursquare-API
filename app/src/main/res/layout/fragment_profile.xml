@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/hello_stranger"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:text="Hello stranger."
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/login_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/hello_stranger"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="You're not currently logged in. \n Create a profile by signing in with your Facebook account"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+
+    <Button
+        android:id="@+id/sign_in_facebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_message"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@color/whiteColor"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Sign In With Facebook"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent" />
+</RelativeLayout>
