@@ -1,2 +1,2 @@
-# redditpicviewer
-Android app to browse reddit /r/pics.
+# Winnie
+Android app to view venues at a location from a foursquare map
