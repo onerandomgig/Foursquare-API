@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -30,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import in.continuousloop.winnie.R;
 import in.continuousloop.winnie.api.APIManager;
+import in.continuousloop.winnie.constants.AppConstants;
 import in.continuousloop.winnie.model.FourSquareVenue;
 import in.continuousloop.winnie.utils.PermissionsManager;
 import rx.android.schedulers.AndroidSchedulers;
@@ -53,7 +53,6 @@ public class WinnieMapViewFragment extends Fragment
     private boolean permissionGranted;
 
     private static final String TAG = "WN/WinnieMapViewFrgmt";
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 9000;
 
     /**
      * {@inheritDoc}
@@ -151,24 +150,14 @@ public class WinnieMapViewFragment extends Fragment
         return false;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
-            return;
-        }
+    /**
+     * Refresh map after permissions are granted
+     */
+    public void locationPermissionsGranted() {
+        permissionGranted = true;
+        googleApiClient.connect();
 
-        if (PermissionsManager.isPermissionGranted(permissions, grantResults,
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Enable the my location layer if the permission has been granted.
-            permissionGranted = true;
-            googleApiClient.connect();
-
-            _enableMyLocation();
-        } else {
-            // Display the missing permission error dialog when the fragments resume.
-            permissionGranted = false;
-        }
+        _enableMyLocation();
     }
 
     @Override
@@ -227,7 +216,7 @@ public class WinnieMapViewFragment extends Fragment
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
-            PermissionsManager.requestPermission((AppCompatActivity)getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
+            PermissionsManager.requestPermission((AppCompatActivity)getActivity(), AppConstants.LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
         } else if (googleMap != null) {
             // Access to the location has been granted to the app.

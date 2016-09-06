@@ -1,7 +1,10 @@
 package in.continuousloop.winnie;
 
+import android.Manifest;
 import android.graphics.PorterDuff;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,14 +25,17 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import in.continuousloop.winnie.constants.AppConstants;
 import in.continuousloop.winnie.fragments.ProfileFragment;
 import in.continuousloop.winnie.fragments.StoriesFragment;
 import in.continuousloop.winnie.fragments.WinnieMapViewFragment;
+import in.continuousloop.winnie.utils.PermissionsManager;
 
 /**
  * The home activity to show venues at a location.
  */
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity
+        implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -91,6 +97,24 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode != AppConstants.LOCATION_PERMISSION_REQUEST_CODE) {
+            return;
+        }
+
+        if (PermissionsManager.isPermissionGranted(permissions, grantResults,
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            // Enable the my location layer if the permission has been granted.
+
+            if (viewPager.getCurrentItem() == 0) {
+                WinnieMapViewFragment mapFragment = (WinnieMapViewFragment) sectionsPagerAdapter.getItem(viewPager.getCurrentItem());
+                mapFragment.locationPermissionsGranted();
+            }
+        }
+    }
+
     /**
      * Create a tab and set the specified icon and text
      *
@@ -114,6 +138,11 @@ public class HomeActivity extends AppCompatActivity {
         return lTab;
     }
 
+    /**
+     * Toggle tab icon color when it is selected / unselected
+     * @param tab - Tab to toggle icon color for
+     * @param enabled - true when selected, false otherwise
+     */
     private void _toggleTabColor(TabLayout.Tab tab, boolean enabled) {
 
         int tabIconColor;
@@ -134,6 +163,7 @@ public class HomeActivity extends AppCompatActivity {
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
         private List<String> tabs;
+        private List<Fragment> tabFragments;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -142,18 +172,17 @@ public class HomeActivity extends AppCompatActivity {
             tabs.add(getApplication().getResources().getString(R.string.section_map));
             tabs.add(getApplication().getResources().getString(R.string.section_stories));
             tabs.add(getApplication().getResources().getString(R.string.section_profile));
+
+            tabFragments = new ArrayList<>();
+            tabFragments.add(new WinnieMapViewFragment());
+            tabFragments.add(new StoriesFragment());
+            tabFragments.add(new ProfileFragment());
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given tab.
-            if (position == 0) {
-                return new WinnieMapViewFragment();
-            } else if (position == 1) {
-                return new StoriesFragment();
-            } else {
-                return new ProfileFragment();
-            }
+            return tabFragments.get(position);
         }
 
         @Override
