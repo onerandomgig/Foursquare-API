@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -164,6 +165,8 @@ public class WinnieMapViewFragment extends Fragment
                         VisibleRegion vr = googleMap.getProjection().getVisibleRegion();
                         _refreshMapMarkers(vr.latLngBounds.getCenter(), googleMap.getCameraPosition().zoom, false);
                     }
+                }, error -> {
+                    Log.e(TAG, "Error when refreshing map");
                 });
 
         refreshProgressRelay.startWith(0)
@@ -257,6 +260,8 @@ public class WinnieMapViewFragment extends Fragment
                     }
 
                     refreshProgressRelay.call(100);
+                }, error -> {
+                    Crashlytics.logException(error);
                 });
     }
 
