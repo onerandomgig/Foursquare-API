@@ -24,6 +24,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.jakewharton.rxrelay.PublishRelay;
@@ -44,6 +45,7 @@ import rx.schedulers.Schedulers;
 public class WinnieMapViewFragment extends Fragment
         implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMarkerClickListener,
         GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener,
         GoogleApiClient.ConnectionCallbacks {
@@ -59,6 +61,8 @@ public class WinnieMapViewFragment extends Fragment
 
     private GoogleMap googleMap;
     private GoogleApiClient googleApiClient;
+
+    private Marker currentlyTappedMarker;
 
     private boolean permissionGranted;
     private PublishRelay<Integer> mapMovedRelay;
@@ -152,6 +156,7 @@ public class WinnieMapViewFragment extends Fragment
         googleMap.setOnMyLocationButtonClickListener(this);
         googleMap.setOnCameraIdleListener(this);
         googleMap.setOnCameraMoveListener(this);
+        googleMap.setOnMarkerClickListener(this);
 
         // Refresh locations when user moves the map
         mapMovedRelay.startWith(MAP_STATE_IDLE)
@@ -161,7 +166,6 @@ public class WinnieMapViewFragment extends Fragment
                 .subscribe(isStoppedMoving -> {
                     if (isStoppedMoving) {
                         googleMap.clear();
-
                         VisibleRegion vr = googleMap.getProjection().getVisibleRegion();
                         _refreshMapMarkers(vr.latLngBounds.getCenter(), googleMap.getCameraPosition().zoom, false);
                     }
@@ -198,6 +202,18 @@ public class WinnieMapViewFragment extends Fragment
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        if (currentlyTappedMarker != null) {
+            currentlyTappedMarker.hideInfoWindow();
+        }
+
+        currentlyTappedMarker = marker;
+        currentlyTappedMarker.showInfoWindow();
+        return true;
     }
 
     @Override
