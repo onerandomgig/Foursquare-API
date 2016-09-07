@@ -56,8 +56,15 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/activity_filters">
+        android:layout_below="@id/activity_filters"></com.google.android.gms.maps.MapView>
 
-    </com.google.android.gms.maps.MapView>
+    <ProgressBar
+        android:id="@+id/map_refresh_progress"
+        android:layout_width="match_parent"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_height="2dp"
+        android:indeterminate="false"
+        android:progressDrawable="@drawable/wn_progressbar_flat_accent"
+        android:layout_below="@id/activity_filters" />
 
 </RelativeLayout>

@@ -3,6 +3,7 @@ package in.continuousloop.winnie.api;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jakewharton.rxrelay.PublishRelay;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -87,13 +88,17 @@ public class APIManager {
      *
      * @return - List of {@link FourSquareVenue} as an observable
      */
-    public Observable<List<FourSquareVenue>> getVenuesAtLocation(double latitude, double longitude) {
+    public Observable<List<FourSquareVenue>> getVenuesAtLocation(double latitude,
+                                                                 double longitude,
+                                                                 PublishRelay<Integer> progress) {
 
         return foursquareAPIService.getVenues(latitude+","+longitude,
                 AppConstants.FSQ_CLIENT_ID,
                 AppConstants.FSQ_CLIENT_SECRET,
                 "20160902",
                 "foursquare")
-                .flatMap(response -> FourSquareResponseMapper.mapVenuesResponse(response.getResponse()));
+                .doOnNext(response -> progress.call(70))
+                .flatMap(response -> FourSquareResponseMapper.mapVenuesResponse(response.getResponse()))
+                .doOnNext(response -> progress.call(80));
     }
 }
